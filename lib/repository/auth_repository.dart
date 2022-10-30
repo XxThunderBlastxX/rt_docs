@@ -43,8 +43,8 @@ class AuthRepository {
         final userAcc = UserModel(
             uid: '',
             email: user.email,
-            name: user.displayName!,
-            profilePic: user.photoUrl!,
+            name: user.displayName ?? '',
+            profilePic: user.photoUrl ?? '',
             token: '');
 
         var res = await _client.post(

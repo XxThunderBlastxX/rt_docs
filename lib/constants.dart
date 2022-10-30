@@ -1,1 +1,1 @@
-const kHost = 'http://localhost:4024';
+const kHost = 'http://10.0.2.2:4024';
