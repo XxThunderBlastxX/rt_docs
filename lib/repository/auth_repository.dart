@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -48,7 +49,8 @@ class AuthRepository {
             token: '');
 
         var res = await _client.post(
-          Uri.parse('$kHost/api/signup'),
+          Uri.parse(
+              '${defaultTargetPlatform == TargetPlatform.android ? kHostAndroid : kHostWeb}/api/signup'),
           body: userAcc.toJson(),
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
         );
@@ -62,8 +64,6 @@ class AuthRepository {
             _localStorageRepo.setToken(newUser.token);
             error = ErrorModel(err: null, data: newUser);
             break;
-          // default:
-          //   throw UnsupportedError('Opps!! Something went wrong');
         }
       }
     } catch (err) {
@@ -82,7 +82,8 @@ class AuthRepository {
 
       if (token != null) {
         var res = await _client.get(
-          Uri.parse('$kHost/'),
+          Uri.parse(
+              '${defaultTargetPlatform == TargetPlatform.android ? kHostAndroid : kHostWeb}/'),
           headers: {'x-auth-token': token},
         );
 
