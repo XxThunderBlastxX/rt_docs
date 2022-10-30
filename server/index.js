@@ -1,18 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const authRouter = require("./routes/auth_routes");
+const cors = require('cors')
+require('dotenv').config();
 
 const PORT = process.env.PORT | 3000;
-const MONGO_URI = "mongodb+srv://koustav:DRhk36qY4Xgn@microservicesfcc.i93ca.mongodb.net/rt-docs?authSource=admin&replicaSet=atlas-aeenjt-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true";
+const MONGO_URI = process.env.MONGO_URI;
 
+// Connect to MongoDB
 mongoose.connect(MONGO_URI).then(() => {
     console.log("Connected to MongoDB!! ");
 }).catch((err) => {
     console.log(err)
 });
 
+// Express instance
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(authRouter);
 
