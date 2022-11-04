@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:routemaster/routemaster.dart';
 
 import 'models/error_model.dart';
@@ -7,6 +8,7 @@ import 'repository/auth_repository.dart';
 import 'router.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(
     const ProviderScope(
       child: MyApp(),
