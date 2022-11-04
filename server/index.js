@@ -5,6 +5,7 @@ const cors = require('cors')
 const documentRouter = require("./routes/document_route");
 const http = require("http");
 require('dotenv').config();
+const Document = require("./models/document_model");
 
 const PORT = process.env.PORT | 3000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -35,6 +36,15 @@ io.on('connection', (socket) => {
     socket.on('typing', (data) => {
         socket.broadcast.to(data.room).emit('changes', data);
     });
+    
+    socket.on('save', (data) => {
+        saveData(data);
+    });
 });
 
+const saveData = async (data) => {
+    let document = await Document.findById(data.room);
+    document.content = data.delta;
+    document = document.save();
+}
 server.listen(PORT, "0.0.0.0", () => console.log(`Server Connected at port ${PORT}`));

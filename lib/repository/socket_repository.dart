@@ -20,4 +20,8 @@ class SocketRepository {
       func(data);
     });
   }
+
+  void autoSave(Map<String, dynamic> data) {
+    _socketClient.emit('save', data);
+  }
 }

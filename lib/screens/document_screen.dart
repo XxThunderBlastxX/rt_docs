@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 
 import '../colors.dart';
 import '../common/widgets/loader.dart';
+import '../constants.dart';
 import '../models/document_model.dart';
 import '../models/error_model.dart';
 import '../repository/auth_repository.dart';
@@ -81,6 +86,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         quill.ChangeSource.REMOTE,
       );
     });
+
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      socketRepository.autoSave(<String, dynamic>{
+        'delta': _quillController!.document.toDelta(),
+        'room': widget.id,
+      });
+    });
   }
 
   @override
@@ -104,7 +116,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => Clipboard.setData(
+                ClipboardData(
+                    text: 'http://$kHostedDomain/#/document/${widget.id}'),
+              ).then(
+                (value) => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Linked Copied !!!'),
+                  ),
+                ),
+              ),
               icon: const Icon(
                 Icons.lock,
                 size: 18,
@@ -118,9 +139,12 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             children: [
-              Image.asset(
-                'assets/images/doc_img.png',
-                height: 40,
+              GestureDetector(
+                onTap: () => Routemaster.of(context).replace('/'),
+                child: Image.asset(
+                  'assets/images/doc_img.png',
+                  height: 40,
+                ),
               ),
               const SizedBox(width: 10.0),
               SizedBox(
