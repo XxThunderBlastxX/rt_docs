@@ -1,16 +1,34 @@
-# rt_docs
+# <center> 📄 RT-Docs  </center>
 
-A new Flutter project.
+> An Interactive document to collaborate and make docs.
 
-## Getting Started
+### 👨‍💻 Technical Stack
 
-This project is a starting point for a Flutter application.
+- [Flutter](https://flutter.dev)
+- [Express](https://expressjs.com)
+- [SocketIO](htps://socket.io)
+- [MongoDB](https://mongodb.com)
 
-A few resources to get you started if this is your first Flutter project:
+### ⚙ How to run the application
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- First run the backend server:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```shell
+cd ./server
+npm run dev
+```
+
+- Run the flutter application from root dir:
+
+```shell
+flutter run -d edge --web-port 3400
+```
+
+## 🙍‍♂️ Author
+
+- 👦 [ThunderBlast](https://github.com/XxThunderBlastxX)
+
+## 📃 Licence
+
+Copyright © 2022 [ThunderBlast](https://github.com/xXThunderBlastxX).<br />
+This project is [MIT](LICENCE) licensed.
