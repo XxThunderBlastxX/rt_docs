@@ -6,7 +6,7 @@
 
 - [Flutter](https://flutter.dev)
 - [Express](https://expressjs.com)
-- [SocketIO](htps://socket.io)
+- [SocketIO](https://socket.io)
 - [MongoDB](https://mongodb.com)
 
 ### ⚙ How to run the application
