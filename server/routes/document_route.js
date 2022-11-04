@@ -20,4 +20,15 @@ documentRouter.post('/doc/create', auth, async (req, res) => {
     }
 });
 
+
+documentRouter.get('/docs/me', auth, async (req, res) => {
+    try {
+        let docs = await Document.find({uid: req.user});
+        res.json(docs);
+        
+    } catch (err) {
+        res.status(500).json({"error": err.message});
+        console.log(err);
+    }
+});
 module.exports = documentRouter;
