@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
-import 'package:rt_docs/router.dart';
 
 import 'models/error_model.dart';
 import 'repository/auth_repository.dart';
+import 'router.dart';
 
 void main() {
   runApp(

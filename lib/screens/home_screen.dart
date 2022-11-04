@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rt_docs/colors.dart';
+import 'package:routemaster/routemaster.dart';
 
+import '../colors.dart';
 import '../repository/auth_repository.dart';
+import '../repository/document_repository.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,6 +14,24 @@ class HomeScreen extends ConsumerWidget {
     ref.read(userProvider.notifier).update((state) => null);
   }
 
+  void createDocument(WidgetRef ref, BuildContext context) async {
+    String token = ref.read(userProvider)!.token;
+    final navigator = Routemaster.of(context);
+    final snackbar = ScaffoldMessenger.of(context);
+
+    final errModel = await ref.read(documentRepoProvider).createDocument(token);
+
+    if (errModel.data != null) {
+      navigator.push('/document/${errModel.data.id}');
+    } else {
+      snackbar.showSnackBar(
+        SnackBar(
+          content: Text(errModel.err!),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -19,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: kTealColor,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => createDocument(ref, context),
             icon: const Icon(Icons.add_box_rounded),
           ),
           IconButton(
