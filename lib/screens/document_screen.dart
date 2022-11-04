@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rt_docs/models/document_model.dart';
+import 'package:rt_docs/models/error_model.dart';
+import 'package:rt_docs/repository/auth_repository.dart';
+import 'package:rt_docs/repository/document_repository.dart';
 
 import '../colors.dart';
 
@@ -19,12 +23,38 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   TextEditingController titleController =
       TextEditingController(text: 'Untitled Text');
 
-  quill.QuillController _quillController = quill.QuillController.basic();
+  final quill.QuillController _quillController = quill.QuillController.basic();
+
+  ErrorModel? errorModel;
+
+  void updateTitle(WidgetRef ref, String title) {
+    final uProvider = ref.read(userProvider);
+    ref.read(documentRepoProvider).updateDocumentTitle(
+        token: uProvider!.token, id: widget.id, title: title);
+  }
+
+  void fetchDocData() async {
+    errorModel = await ref
+        .read(documentRepoProvider)
+        .getDocumentById(ref.read(userProvider)!.token, widget.id);
+
+    if (errorModel!.data != null) {
+      setState(() {
+        titleController.text = (errorModel!.data as DocumentModel).title;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDocData();
+  }
 
   @override
   void dispose() {
+    super.dispose();
     titleController.dispose();
-    _quillController.dispose();
   }
 
   @override
@@ -42,7 +72,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                 Icons.lock,
                 size: 18,
               ),
-              label: Text('Share'),
+              label: const Text('Share'),
               style: ElevatedButton.styleFrom(backgroundColor: kBlueColor),
             ),
           ),
@@ -67,6 +97,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                     ),
                     contentPadding: EdgeInsets.only(left: 10),
                   ),
+                  onSubmitted: (value) => updateTitle(ref, value),
                 ),
               ),
             ],

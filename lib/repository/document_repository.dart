@@ -90,4 +90,56 @@ class DocumentRepository {
     }
     return error;
   }
+
+  void updateDocumentTitle({
+    required String token,
+    required String id,
+    required String title,
+  }) async {
+    var resBody = jsonEncode({
+      "id": id,
+      'title': title,
+    });
+
+    var res = await _client.post(
+      Uri.parse(
+          '${defaultTargetPlatform == TargetPlatform.android ? kHostAndroid : kHostWeb}/doc/title'),
+      headers: {
+        'x-auth-token': token,
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: resBody,
+    );
+  }
+
+  Future<ErrorModel> getDocumentById(String token, String id) async {
+    ErrorModel error =
+        ErrorModel(err: 'Opps Something went wrong!!!', data: null);
+
+    try {
+      var res = await _client.get(
+        Uri.parse(
+            '${defaultTargetPlatform == TargetPlatform.android ? kHostAndroid : kHostWeb}/docs/$id'),
+        headers: {
+          'x-auth-token': token,
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      switch (res.statusCode) {
+        case 200:
+          error = ErrorModel(
+            err: null,
+            data: DocumentModel.fromJson(res.body),
+          );
+          break;
+        default:
+          throw 'This document dosen\'t exist !!!';
+      }
+    } catch (err) {
+      error = ErrorModel(err: err.toString(), data: null);
+      print(err);
+    }
+    return error;
+  }
 }

@@ -31,4 +31,27 @@ documentRouter.get('/docs/me', auth, async (req, res) => {
         console.log(err);
     }
 });
+
+documentRouter.post('/doc/title', auth, async (req, res) => {
+    try {
+        const {id, title} = req.body;
+        const doc = await Document.findByIdAndUpdate(id, {title});
+        
+        res.json(doc);
+    } catch (err) {
+        res.status(500).json({"error": err.message});
+        console.log(err);
+    }
+});
+
+documentRouter.get('/docs/:id', auth, async (req, res) => {
+    try {
+        let doc = await Document.findById(req.params.id);
+        res.json(doc);
+    } catch (err) {
+        res.status(500).json({"error": err.message});
+        console.log(err);
+    }
+});
+
 module.exports = documentRouter;
