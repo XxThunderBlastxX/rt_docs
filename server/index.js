@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const authRouter = require("./routes/auth_route");
 const cors = require('cors')
 const documentRouter = require("./routes/document_route");
+const http = require("http");
 require('dotenv').config();
 
 const PORT = process.env.PORT | 3000;
@@ -17,10 +18,19 @@ mongoose.connect(MONGO_URI).then(() => {
 
 // Express instance
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server);
 
 app.use(cors());
 app.use(express.json());
 app.use(authRouter);
 app.use(documentRouter);
 
-app.listen(PORT, "0.0.0.0", () => console.log(`Server Connected at port ${PORT}`));
+io.on('connection', (socket) => {
+    socket.on('join', (documentId) => {
+        socket.join(documentId);
+        console.log('Socket joined: ' + documentId);
+    });
+})
+
+server.listen(PORT, "0.0.0.0", () => console.log(`Server Connected at port ${PORT}`));

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rt_docs/models/document_model.dart';
-import 'package:rt_docs/models/error_model.dart';
-import 'package:rt_docs/repository/auth_repository.dart';
-import 'package:rt_docs/repository/document_repository.dart';
+import 'package:rt_docs/repository/socket_repository.dart';
 
 import '../colors.dart';
+import '../models/document_model.dart';
+import '../models/error_model.dart';
+import '../repository/auth_repository.dart';
+import '../repository/document_repository.dart';
 
 class DocumentScreen extends ConsumerStatefulWidget {
   final String id;
@@ -26,6 +27,8 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   final quill.QuillController _quillController = quill.QuillController.basic();
 
   ErrorModel? errorModel;
+
+  SocketRepository socketRepository = SocketRepository();
 
   void updateTitle(WidgetRef ref, String title) {
     final uProvider = ref.read(userProvider);
@@ -49,6 +52,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   void initState() {
     super.initState();
     fetchDocData();
+    socketRepository.joinRoom(widget.id);
   }
 
   @override
