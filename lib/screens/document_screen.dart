@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../colors.dart';
@@ -18,9 +19,12 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   TextEditingController titleController =
       TextEditingController(text: 'Untitled Text');
 
+  quill.QuillController _quillController = quill.QuillController.basic();
+
   @override
   void dispose() {
     titleController.dispose();
+    _quillController.dispose();
   }
 
   @override
@@ -38,7 +42,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                 Icons.lock,
                 size: 18,
               ),
-              label: const Text('Share'),
+              label: Text('Share'),
               style: ElevatedButton.styleFrom(backgroundColor: kBlueColor),
             ),
           ),
@@ -81,7 +85,29 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         ),
       ),
       body: Center(
-        child: Text(widget.id),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            quill.QuillToolbar.basic(controller: _quillController),
+            const SizedBox(height: 10),
+            Expanded(
+              child: SizedBox(
+                width: 750,
+                child: Card(
+                  color: kWhiteColor,
+                  elevation: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(35.0),
+                    child: quill.QuillEditor.basic(
+                      controller: _quillController,
+                      readOnly: false,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
