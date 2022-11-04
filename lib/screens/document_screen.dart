@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rt_docs/repository/socket_repository.dart';
 
 import '../colors.dart';
+import '../common/widgets/loader.dart';
 import '../models/document_model.dart';
 import '../models/error_model.dart';
 import '../repository/auth_repository.dart';
 import '../repository/document_repository.dart';
+import '../repository/socket_repository.dart';
 
 class DocumentScreen extends ConsumerStatefulWidget {
   final String id;
@@ -24,7 +25,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   TextEditingController titleController =
       TextEditingController(text: 'Untitled Text');
 
-  final quill.QuillController _quillController = quill.QuillController.basic();
+  quill.QuillController? _quillController;
 
   ErrorModel? errorModel;
 
@@ -33,7 +34,10 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   void updateTitle(WidgetRef ref, String title) {
     final uProvider = ref.read(userProvider);
     ref.read(documentRepoProvider).updateDocumentTitle(
-        token: uProvider!.token, id: widget.id, title: title);
+          token: uProvider!.token,
+          id: widget.id,
+          title: title,
+        );
   }
 
   void fetchDocData() async {
@@ -44,8 +48,25 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     if (errorModel!.data != null) {
       setState(() {
         titleController.text = (errorModel!.data as DocumentModel).title;
+        _quillController = quill.QuillController(
+          selection: const TextSelection.collapsed(offset: 0),
+          document: errorModel!.data.content.isEmpty
+              ? quill.Document()
+              : quill.Document.fromDelta(
+                  quill.Delta.fromJson(errorModel!.data.content),
+                ),
+        );
       });
     }
+    _quillController!.document.changes.listen((event) {
+      if (event.item3 == quill.ChangeSource.LOCAL) {
+        Map<String, dynamic> map = {
+          'delta': event.item2,
+          'room': widget.id,
+        };
+        socketRepository.typing(map);
+      }
+    });
   }
 
   @override
@@ -53,6 +74,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     super.initState();
     fetchDocData();
     socketRepository.joinRoom(widget.id);
+    socketRepository.changeListener((data) {
+      _quillController?.compose(
+        quill.Delta.fromJson(data['delta']),
+        _quillController?.selection ?? const TextSelection.collapsed(offset: 0),
+        quill.ChangeSource.REMOTE,
+      );
+    });
   }
 
   @override
@@ -63,6 +91,11 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_quillController == null) {
+      return const Scaffold(
+        body: Loader(),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kWhiteColor,
@@ -123,7 +156,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            quill.QuillToolbar.basic(controller: _quillController),
+            quill.QuillToolbar.basic(controller: _quillController!),
             const SizedBox(height: 10),
             Expanded(
               child: SizedBox(
@@ -134,13 +167,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(35.0),
                     child: quill.QuillEditor.basic(
-                      controller: _quillController,
+                      controller: _quillController!,
                       readOnly: false,
                     ),
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

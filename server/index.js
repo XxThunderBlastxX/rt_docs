@@ -31,6 +31,10 @@ io.on('connection', (socket) => {
         socket.join(documentId);
         console.log('Socket joined: ' + documentId);
     });
-})
+    
+    socket.on('typing', (data) => {
+        socket.broadcast.to(data.room).emit('changes', data);
+    });
+});
 
 server.listen(PORT, "0.0.0.0", () => console.log(`Server Connected at port ${PORT}`));
