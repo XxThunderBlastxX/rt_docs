@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../colors.dart';
+import '../common/widgets/loader.dart';
+import '../models/document_model.dart';
 import '../repository/auth_repository.dart';
 import '../repository/document_repository.dart';
 
@@ -32,27 +34,73 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
+  void navigateToDoc(String docId, BuildContext context) {
+    Routemaster.of(context).push('/document/$docId');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kTealColor,
+        backgroundColor: kWhiteColor,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () => createDocument(ref, context),
-            icon: const Icon(Icons.add_box_rounded),
+            icon: const Icon(
+              Icons.add,
+              color: kBlackColor,
+            ),
           ),
           IconButton(
             onPressed: () => signOut(ref),
             icon: const Icon(
-              Icons.logout_rounded,
-              color: kRed,
+              Icons.logout,
+              color: kRedColor,
             ),
           ),
         ],
       ),
-      body: Center(
-        child: Text(ref.watch(userProvider)!.uid),
+      body: FutureBuilder(
+        future: ref.watch(documentRepoProvider).getDocuments(
+              ref.watch(userProvider)!.token,
+            ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader();
+          }
+
+          return Center(
+            child: Container(
+              width: 600,
+              margin: const EdgeInsets.only(top: 10),
+              child: SizedBox(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.data.length,
+                  itemBuilder: (context, index) {
+                    DocumentModel doc = snapshot.data!.data[index];
+                    return SizedBox(
+                      height: 50,
+                      child: InkWell(
+                        onTap: () => navigateToDoc(doc.id, context),
+                        child: Card(
+                          child: Center(
+                            child: Text(
+                              doc.title,
+                              style: const TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

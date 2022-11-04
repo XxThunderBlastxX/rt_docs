@@ -54,4 +54,40 @@ class DocumentRepository {
     }
     return error;
   }
+
+  Future<ErrorModel> getDocuments(String token) async {
+    ErrorModel error =
+        ErrorModel(err: 'Opps Something went wrong!!!', data: null);
+
+    try {
+      var res = await _client.get(
+        Uri.parse(
+            '${defaultTargetPlatform == TargetPlatform.android ? kHostAndroid : kHostWeb}/docs/me'),
+        headers: {
+          'x-auth-token': token,
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      switch (res.statusCode) {
+        case 200:
+          List<DocumentModel> docs = [];
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            docs.add(
+                DocumentModel.fromJson(jsonEncode(jsonDecode(res.body)[i])));
+          }
+          error = ErrorModel(
+            err: null,
+            data: docs,
+          );
+          break;
+        default:
+          error = ErrorModel(err: res.body, data: null);
+      }
+    } catch (err) {
+      error = ErrorModel(err: err.toString(), data: null);
+      print(err);
+    }
+    return error;
+  }
 }
