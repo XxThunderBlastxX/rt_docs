@@ -148,7 +148,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
               ),
               const SizedBox(width: 10.0),
               SizedBox(
-                width: 180,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: TextField(
                   controller: titleController,
                   decoration: const InputDecoration(
@@ -175,6 +175,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
             ),
           ),
         ),
+        leadingWidth: 8.0,
       ),
       body: Center(
         child: Column(
