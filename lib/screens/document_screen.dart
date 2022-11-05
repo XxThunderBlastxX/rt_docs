@@ -118,7 +118,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
             child: ElevatedButton.icon(
               onPressed: () => Clipboard.setData(
                 ClipboardData(
-                    text: 'http://$kHostedDomain/document/${widget.id}'),
+                    text: 'https://$kHostedDomain/document/${widget.id}'),
               ).then(
                 (value) => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

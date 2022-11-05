@@ -7,7 +7,7 @@ const http = require("http");
 require('dotenv').config();
 const Document = require("./models/document_model");
 
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Connect to MongoDB

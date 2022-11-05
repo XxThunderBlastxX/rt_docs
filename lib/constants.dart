@@ -1,4 +1,4 @@
-const kHostAndroid = 'http://10.0.2.2:4024';
-const kHostWeb = 'http://localhost:4024';
+const kHostAndroid = 'https://docs-api.koustavmondal.me';
+const kHostWeb = 'https://docs-api.koustavmondal.me';
 
-const kHostedDomain = 'localhost:3400';
+const kHostedDomain = 'docs.koustavmondal.me';
