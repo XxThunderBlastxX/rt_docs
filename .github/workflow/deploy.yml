@@ -1,0 +1,17 @@
+name: Gh-Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2 # Only works with v2
+      - uses: subosito/flutter-action@v1
+      - uses: cogivn/flutter-gh-pages@v3
+        with:
+          webRenderer: canvaskit
+          targetBranch: web-build
